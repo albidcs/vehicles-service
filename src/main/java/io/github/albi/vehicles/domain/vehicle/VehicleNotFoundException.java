@@ -1,17 +1,21 @@
 package io.github.albi.vehicles.domain.vehicle;
 
-public class VehicleNotFoundException {
 
+
+/**
+ * Exception thrown when a requested Vehicle is not found in the domain.
+ *
+ * <p>This lives in the domain layer, so it can be thrown from business logic
+ * without depending on infrastructure or web layers.</p>
+ */
+public final class VehicleNotFoundException extends RuntimeException {
 
     /**
-     * Exception thrown when a requested Vehicle is not found in the domain.
+     * Creates a new exception for the given VehicleId.
      *
-     * This lives in the domain layer, so it can be thrown from business logic
-     * without depending on infrastructure or web layers.
+     * @param id the vehicle ID that was not found (nullable for unknown IDs)
      */
-    public class VehicleNotFound extends RuntimeException {
-        public VehicleNotFound(VehicleId id) {
-            super("Vehicle not found: " + (id == null ? "(null)" : id.value()));
-        }
+    public VehicleNotFoundException(VehicleId id) {
+        super("Vehicle not found: " + (id == null ? "(null)" : id.value()));
     }
 }
