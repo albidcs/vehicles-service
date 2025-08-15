@@ -1,4 +1,4 @@
-package io.github.albi.vehiclesservice;
+package io.github.albi.vehicles;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

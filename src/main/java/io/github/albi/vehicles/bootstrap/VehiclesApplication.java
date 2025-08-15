@@ -1,4 +1,4 @@
-package io.github.albi.vehiclesservice;
+package io.github.albi.vehicles.bootstrap;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
