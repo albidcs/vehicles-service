@@ -3,6 +3,10 @@ package io.github.albi.vehicles.adapters.persistence.vehicle;
 import io.github.albi.vehicles.domain.vehicle.Vehicle;
 import io.github.albi.vehicles.domain.vehicle.VehicleId;
 
+
+import io.github.albi.vehicles.domain.vehicle.Vehicle;
+import io.github.albi.vehicles.domain.vehicle.VehicleId;
+
 public final class VehicleMapper {
     private VehicleMapper() {}
 
@@ -12,11 +16,10 @@ public final class VehicleMapper {
     }
 
     public static Vehicle toDomain(VehicleEntity entity) {
-        return new Vehicle(
-                entity.getId() == null ? null : new VehicleId(entity.getId()),
-                entity.getMake(),
-                entity.getModel(),
-                entity.getYear()
-        );
+        Long id = entity.getId();
+        if (id == null) {
+            throw new IllegalStateException("VehicleEntity id must be non-null to map to domain");
+        }
+        return new Vehicle(new VehicleId(id), entity.getMake(), entity.getModel(), entity.getYear());
     }
 }
