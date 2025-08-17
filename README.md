@@ -1,8 +1,7 @@
-README - Vehicles Service
-
 # Vehicles Service
 
-A clean architecture Spring Boot service for managing vehicles.  Demonstrates domain-driven design and separation of concerns.
+A clean architecture Spring Boot service for managing vehicles. Demonstrates domain-driven design and separation of concerns.
+
 ---
 
 ## Architecture
@@ -24,7 +23,7 @@ io.github.albi.vehicles
 
 ### Prerequisites
 - Java 21+
-- Maven 3.9+
+- Maven 3.9+ (or use `./mvnw` wrapper)
 - Docker (for PostgreSQL)
 
 ### Setup
@@ -34,15 +33,24 @@ io.github.albi.vehicles
    docker run --name vehicles-db      -e POSTGRES_DB=vehicles      -e POSTGRES_USER=vehicles      -e POSTGRES_PASSWORD=vehicles      -p 5432:5432 -d postgres:16
    ```
 
-2. Run database migrations:
+2. Run database migrations (Flyway):
    ```bash
-   mvn clean flyway:migrate
+   ./mvnw clean flyway:migrate
    ```
 
 3. Start the application:
    ```bash
-   mvn spring-boot:run
+   ./mvnw spring-boot:run
    ```
+
+The application expects the following default connection (from `application.yml`):
+```
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vehicles
+    username: vehicles
+    password: vehicles
+```
 
 ---
 
@@ -73,7 +81,7 @@ create index if not exists idx_vehicles_year  on vehicles(year);
 Run all unit tests:
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 ---
@@ -81,5 +89,3 @@ mvn test
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
-<img width="432" height="645" alt="image" src="https://github.com/user-attachments/assets/5ad42b89-384a-4d5c-9220-8c1a4d91811f" />
