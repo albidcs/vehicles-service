@@ -44,6 +44,24 @@ class VehicleRepositoryJpaAdapterTest {
         assertThat(v.year()).isEqualTo(2022);
     }
 
+    @Test
+    @DisplayName("findById returns empty when vehicle does not exist")
+    void findById_whenMissing_returnsEmpty() {
+        assertThat(adapter.findById(new VehicleId(999L))).isEmpty();
+    }
+
+    @Test
+    @DisplayName("persisted model/year are read back correctly (model_year column)")
+    void persistAndReadBack_correctMapping() {
+        var saved = jpa.save(new VehicleEntity(null, "Ford", "Focus", 2017));
+        var v = adapter.findById(new VehicleId(saved.getId())).orElseThrow();
+        assertThat(v.model()).isEqualTo("Focus");
+        assertThat(v.year()).isEqualTo(2017);
+    }
+
+
+
+
     @Configuration
     @EnableJpaRepositories(basePackageClasses = VehicleJpaRepository.class)
     @EntityScan(basePackageClasses = VehicleEntity.class)
