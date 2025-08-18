@@ -4,8 +4,10 @@ import io.github.albi.vehicles.adapters.web.vehicle.dto.VehicleRequest;
 import io.github.albi.vehicles.adapters.web.vehicle.dto.VehicleResponse;
 import io.github.albi.vehicles.application.vehicle.VehicleService;
 import io.github.albi.vehicles.domain.vehicle.VehicleId;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -13,7 +15,10 @@ import java.util.List;
 @RequestMapping("/vehicles")
 public class VehicleController {
     private final VehicleService service;
-    public VehicleController(VehicleService service) { this.service = service; }
+
+    public VehicleController(VehicleService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<VehicleResponse> get(@PathVariable long id) {
@@ -33,10 +38,15 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<VehicleResponse> create(@RequestBody VehicleRequest req) {
+    public ResponseEntity<VehicleResponse> create(@Valid @RequestBody VehicleRequest req) {
         var created = service.create(req.make(), req.model(), req.year());
-        return ResponseEntity.ok(new VehicleResponse(
-                created.id().value(), created.make(), created.model(), created.year()
-        ));
+
+        var location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.id().value())
+                .toUri();
+        return ResponseEntity.created(location)
+                .body(new VehicleResponse(created.id().value(), created.make(), created.model(), created.year()));
     }
 }
