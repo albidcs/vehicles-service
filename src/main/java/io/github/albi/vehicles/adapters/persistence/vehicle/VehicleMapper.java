@@ -2,20 +2,25 @@ package io.github.albi.vehicles.adapters.persistence.vehicle;
 
 import io.github.albi.vehicles.domain.vehicle.*;
 
-
-import io.github.albi.vehicles.domain.vehicle.Vehicle;
-import io.github.albi.vehicles.domain.vehicle.VehicleId;
-
 final class VehicleMapper {
+
+    private VehicleMapper() {}
+
     static Vehicle toDomain(VehicleEntity e) {
+        Long rawId = e.getId();
+        if (rawId == null) {
+            // Aligns with test expectation
+            throw new IllegalStateException("VehicleEntity id must not be null");
+        }
+
         return new Vehicle(
-                new VehicleId(e.getId()),
-                e.getVin() == null ? new Vin("AAAAAAAAAAAAAAAAA") : new Vin(e.getVin()), // temp safety if legacy row exists
-                e.getType() == null ? VehicleType.OTHER : VehicleType.valueOf(e.getType()),
+                new VehicleId(rawId),                                            // safe after null-check
+                e.getVin() != null ? new Vin(e.getVin()) : null,
+                e.getType() != null ? VehicleType.valueOf(e.getType()) : null,
                 e.getMake(),
                 e.getModel(),
                 e.getModelYear(),
-                e.getFuelType() == null ? FuelType.OTHER : FuelType.valueOf(e.getFuelType()),
+                e.getFuelType() != null ? FuelType.valueOf(e.getFuelType()) : null,
                 e.getColor(),
                 e.getRegistrationNumber()
         );
@@ -23,13 +28,13 @@ final class VehicleMapper {
 
     static VehicleEntity toEntity(Vehicle v) {
         return new VehicleEntity(
-                v.id().value(),
-                v.vin().value(),
-                v.type().name(),
+                v.id() != null ? v.id().value() : null,
+                v.vin() != null ? v.vin().value() : null,
+                v.type() != null ? v.type().name() : null,
                 v.make(),
                 v.model(),
                 v.year(),
-                v.fuelType().name(),
+                v.fuelType() != null ? v.fuelType().name() : null,
                 v.color(),
                 v.registrationNumber()
         );
