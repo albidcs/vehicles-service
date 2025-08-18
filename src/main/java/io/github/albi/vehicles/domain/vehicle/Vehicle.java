@@ -24,18 +24,25 @@ public final class Vehicle {
             String color,
             String registrationNumber
     ) {
-        this.id = Objects.requireNonNull(id, "id is required");
-        this.vin = Objects.requireNonNull(vin, "vin is required");
-        this.type = Objects.requireNonNull(type, "type is required");
+        if (id == null) throw new IllegalArgumentException("id is required");
+        if (vin == null) throw new IllegalArgumentException("vin is required");
+        if (type == null) throw new IllegalArgumentException("type is required");
         if (make == null || make.isBlank()) throw new IllegalArgumentException("make is required");
         if (model == null || model.isBlank()) throw new IllegalArgumentException("model is required");
         if (year < 1886) throw new IllegalArgumentException("year invalid");
+        if (fuelType == null) throw new IllegalArgumentException("fuelType is required");
+
+        this.id = id;
+        this.vin = vin;
+        this.type = type;
         this.make = make;
         this.model = model;
         this.year = year;
-        this.fuelType = Objects.requireNonNull(fuelType, "fuelType is required");
+        this.fuelType = fuelType;
         this.color = (color == null || color.isBlank()) ? null : color.trim();
-        this.registrationNumber = (registrationNumber == null || registrationNumber.isBlank()) ? null : registrationNumber.trim().toUpperCase();
+        this.registrationNumber = (registrationNumber == null || registrationNumber.isBlank())
+                ? null
+                : registrationNumber.trim().toUpperCase();
     }
 
     public VehicleId id() { return id; }
