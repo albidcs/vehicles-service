@@ -1,10 +1,14 @@
 package io.github.albi.vehicles.application.vehicle;
 
-
 import io.github.albi.vehicles.domain.vehicle.Vehicle;
 import io.github.albi.vehicles.domain.vehicle.VehicleId;
 import io.github.albi.vehicles.domain.vehicle.VehicleNotFoundException;
 import io.github.albi.vehicles.domain.vehicle.VehicleRepository;
+import java.util.List;
+import java.util.Objects;
+
+
+import io.github.albi.vehicles.domain.vehicle.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,27 +21,27 @@ public final class VehicleService {
     }
 
     public Vehicle getById(VehicleId id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new VehicleNotFoundException(id));
+        return repository.findById(id).orElseThrow(() -> new VehicleNotFoundException(id));
     }
 
-    public List<Vehicle> search(String make, String model, Integer year) {
-        return repository.search(make, model, year);
+    public List<Vehicle> search(String make, String model, Integer year,
+                                VehicleType type, FuelType fuelType) {
+        return repository.search(make, model, year, type, fuelType);
     }
 
-    public Vehicle create(String make, String model, Integer year) {
-        return repository.create(make, model, year);
+    public Vehicle create(Vin vin, VehicleType type, String make, String model, Integer year,
+                          FuelType fuelType, String color, String registrationNumber) {
+        return repository.create(vin, type, make, model, year, fuelType, color, registrationNumber);
     }
 
-    public Vehicle update(VehicleId id, String make, String model, Integer year) {
-        // ensure it exists (keeps error semantics consistent)
-        getById(id);
-        return repository.update(id, make, model, year);
+    public Vehicle update(VehicleId id, Vin vin, VehicleType type, String make, String model, Integer year,
+                          FuelType fuelType, String color, String registrationNumber) {
+        getById(id); // keep 404 semantics consistent
+        return repository.update(id, vin, type, make, model, year, fuelType, color, registrationNumber);
     }
 
     public void delete(VehicleId id) {
-        // optional: call getById(id) first to throw 404 if missing
         getById(id);
         repository.delete(id);
     }
-};
+}
