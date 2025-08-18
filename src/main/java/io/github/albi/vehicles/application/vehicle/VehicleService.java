@@ -24,4 +24,4 @@ public final class VehicleService {
     public List<Vehicle> search(String make, String model, Integer year) {
         return repository.search(make, model, year);
     }
-}
+};

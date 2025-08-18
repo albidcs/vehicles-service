@@ -20,7 +20,7 @@ final class VehicleMapperTest {
         assertThat(entity.getId()).isEqualTo(42L);
         assertThat(entity.getMake()).isEqualTo("Toyota");
         assertThat(entity.getModel()).isEqualTo("Yaris");
-        assertThat(entity.getYear()).isEqualTo(2022);
+        assertThat(entity.getModelYear()).isEqualTo(2022);
     }
 
     @Test
