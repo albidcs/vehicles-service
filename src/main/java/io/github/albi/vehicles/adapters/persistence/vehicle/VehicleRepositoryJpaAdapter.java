@@ -6,6 +6,7 @@ import io.github.albi.vehicles.domain.vehicle.VehicleId;
 import io.github.albi.vehicles.domain.vehicle.VehicleRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Optional;
  * using Spring Data JPA under the hood. Keeps the domain decoupled from JPA.
  */
 @Repository
+@Transactional(readOnly = true)
 public class VehicleRepositoryJpaAdapter implements VehicleRepository {
 
     private final VehicleJpaRepository jpa;
@@ -44,6 +46,7 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
                 .toList();
     }
 
+    @Transactional
     @Override
     public Vehicle create(String make, String model, Integer year) {
         // Persist using JPA
@@ -55,6 +58,7 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
     }
 
 
+    @Transactional
     @Override
     public Vehicle update(VehicleId id, String make, String model, Integer year) {
         var entity = jpa.findById(id.value())
@@ -65,6 +69,7 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
         return VehicleMapper.toDomain(jpa.save(entity));
     }
 
+    @Transactional
     @Override
     public void delete(VehicleId id) {
         jpa.deleteById(id.value());
