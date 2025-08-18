@@ -1,5 +1,6 @@
 package io.github.albi.vehicles.adapters.web.vehicle;
 
+import io.github.albi.vehicles.adapters.web.vehicle.dto.VehicleRequest;
 import io.github.albi.vehicles.adapters.web.vehicle.dto.VehicleResponse;
 import io.github.albi.vehicles.application.vehicle.VehicleService;
 import io.github.albi.vehicles.domain.vehicle.VehicleId;
@@ -29,5 +30,13 @@ public class VehicleController {
         return service.search(make, model, year).stream()
                 .map(v -> new VehicleResponse(v.id().value(), v.make(), v.model(), v.year()))
                 .toList();
+    }
+
+    @PostMapping
+    public ResponseEntity<VehicleResponse> create(@RequestBody VehicleRequest req) {
+        var created = service.create(req.make(), req.model(), req.year());
+        return ResponseEntity.ok(new VehicleResponse(
+                created.id().value(), created.make(), created.model(), created.year()
+        ));
     }
 }

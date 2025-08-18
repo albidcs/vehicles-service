@@ -44,6 +44,16 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
                 .toList();
     }
 
+    @Override
+    public Vehicle create(String make, String model, Integer year) {
+        // Persist using JPA
+        var entity = new VehicleEntity(null, make, model, year); // id = null → auto-generated
+        var saved = jpa.save(entity);
+
+        // Map back to domain
+        return VehicleMapper.toDomain(saved);
+    }
+
     // ---- Specification helpers (package-private) ----
 
     static Specification<VehicleEntity> likeIgnoreCaseIfPresent(String field, String value) {
