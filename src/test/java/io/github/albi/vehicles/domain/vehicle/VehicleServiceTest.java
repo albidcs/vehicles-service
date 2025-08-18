@@ -1,16 +1,10 @@
 package io.github.albi.vehicles.domain.vehicle;
 
 import io.github.albi.vehicles.application.vehicle.VehicleService;
-import io.github.albi.vehicles.domain.vehicle.Vehicle;
-import io.github.albi.vehicles.domain.vehicle.VehicleId;
-import io.github.albi.vehicles.domain.vehicle.VehicleNotFoundException;
-import io.github.albi.vehicles.domain.vehicle.VehicleRepository;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 final class VehicleServiceTest {
@@ -37,6 +31,14 @@ final class VehicleServiceTest {
             lastModel.set(model);
             lastYear.set(year);
             return List.of(new Vehicle(new VehicleId(1L), "Toyota", "Corolla", 2020));
+        }
+
+        @Override
+        public Vehicle create(String make, String model, Integer year) {
+            lastMake.set(make);
+            lastModel.set(model);
+            lastYear.set(year);
+            return new Vehicle(new VehicleId(42L), make, model, year);
         }
     }
 
