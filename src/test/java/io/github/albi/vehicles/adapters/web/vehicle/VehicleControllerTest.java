@@ -18,8 +18,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,6 +82,33 @@ class VehicleControllerTest {
                 .andExpect(jsonPath("$.make").value("Toyota"))
                 .andExpect(jsonPath("$.model").value("Yaris"))
                 .andExpect(jsonPath("$.modelYear").value(2022));
+    }
+
+    @Test
+    void update_ok() throws Exception {
+        var updated = new Vehicle(new VehicleId(42L), "Toyota", "Yaris", 2023);
+        Mockito.when(vehicleService.update(eq(new VehicleId(42L)), eq("Toyota"), eq("Yaris"), eq(2023)))
+                .thenReturn(updated);
+
+        mvc.perform(put("/vehicles/{id}", 42)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {"make":"Toyota","model":"Yaris","year":2023}
+                        """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(42))
+                .andExpect(jsonPath("$.make").value("Toyota"))
+                .andExpect(jsonPath("$.model").value("Yaris"))
+                .andExpect(jsonPath("$.modelYear").value(2023));
+    }
+
+    @Test
+    void delete_ok() throws Exception {
+        // just verify 204 comes back, no body expected
+        mvc.perform(delete("/vehicles/{id}", 42))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(vehicleService).delete(new VehicleId(42L));
     }
 
     @Test
