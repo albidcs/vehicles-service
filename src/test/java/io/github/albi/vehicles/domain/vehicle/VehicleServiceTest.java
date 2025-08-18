@@ -162,7 +162,7 @@ final class VehicleServiceTest {
         var repo = new FakeRepo();
         var service = new VehicleService(repo);
 
-        var id = new VehicleId(10L);
+        var id = new VehicleId(1L);
         var updated = service.update(
                 id,
                 new Vin("44444444444444444"),
