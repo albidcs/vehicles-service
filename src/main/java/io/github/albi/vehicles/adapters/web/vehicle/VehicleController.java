@@ -53,4 +53,23 @@ public class VehicleController {
         return ResponseEntity.created(location)
                 .body(new VehicleResponse(created.id().value(), created.make(), created.model(), created.year()));
     }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a vehicle by id")
+    public ResponseEntity<VehicleResponse> update(
+            @PathVariable long id,
+            @Valid @RequestBody VehicleRequest req
+    ) {
+        var updated = service.update(new VehicleId(id), req.make(), req.model(), req.year());
+        return ResponseEntity.ok(new VehicleResponse(
+                updated.id().value(), updated.make(), updated.model(), updated.year()
+        ));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a vehicle by id")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
+        service.delete(new VehicleId(id));
+        return ResponseEntity.noContent().build();
+    }
 }

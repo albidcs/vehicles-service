@@ -28,4 +28,16 @@ public final class VehicleService {
     public Vehicle create(String make, String model, Integer year) {
         return repository.create(make, model, year);
     }
+
+    public Vehicle update(VehicleId id, String make, String model, Integer year) {
+        // ensure it exists (keeps error semantics consistent)
+        getById(id);
+        return repository.update(id, make, model, year);
+    }
+
+    public void delete(VehicleId id) {
+        // optional: call getById(id) first to throw 404 if missing
+        getById(id);
+        repository.delete(id);
+    }
 };

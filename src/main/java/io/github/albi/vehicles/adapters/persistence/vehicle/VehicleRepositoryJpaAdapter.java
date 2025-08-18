@@ -54,6 +54,22 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
         return VehicleMapper.toDomain(saved);
     }
 
+
+    @Override
+    public Vehicle update(VehicleId id, String make, String model, Integer year) {
+        var entity = jpa.findById(id.value())
+                .orElseThrow(() -> new IllegalArgumentException("Vehicle not found: " + id.value()));
+        entity.setMake(make);
+        entity.setModel(model);
+        entity.setModelYear(year);
+        return VehicleMapper.toDomain(jpa.save(entity));
+    }
+
+    @Override
+    public void delete(VehicleId id) {
+        jpa.deleteById(id.value());
+    }
+
     // ---- Specification helpers (package-private) ----
 
     static Specification<VehicleEntity> likeIgnoreCaseIfPresent(String field, String value) {
