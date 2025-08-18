@@ -44,6 +44,7 @@ class VehicleRepositoryJpaAdapterTest {
         assertThat(v.year()).isEqualTo(2022);
     }
 
+
     @Test
     @DisplayName("findById returns empty when vehicle does not exist")
     void findById_whenMissing_returnsEmpty() {
@@ -59,7 +60,17 @@ class VehicleRepositoryJpaAdapterTest {
         assertThat(v.year()).isEqualTo(2017);
     }
 
+    @Test
+    @DisplayName("search returns vehicles matching filters")
+    void search_returnsMatchingVehicles() {
+        jpa.save(new VehicleEntity(null, "Toyota", "Yaris", 2022));
+        jpa.save(new VehicleEntity(null, "Honda", "Civic", 2020));
 
+        var result = adapter.search("Toyota", "Yaris", 2022);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().model()).isEqualTo("Yaris");
+    }
 
 
     @Configuration

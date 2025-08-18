@@ -36,7 +36,7 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
         Specification<VehicleEntity> spec = andAll(
                 likeIgnoreCaseIfPresent("make", make),
                 likeIgnoreCaseIfPresent("model", model),
-                equalsIfPresent("year", year)
+                equalsIfPresent("modelYear", year)
         );
 
         return jpa.findAll(spec).stream()
