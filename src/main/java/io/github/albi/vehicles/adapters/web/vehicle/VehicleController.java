@@ -4,6 +4,7 @@ import io.github.albi.vehicles.adapters.web.vehicle.dto.VehicleRequest;
 import io.github.albi.vehicles.adapters.web.vehicle.dto.VehicleResponse;
 import io.github.albi.vehicles.application.vehicle.VehicleService;
 import io.github.albi.vehicles.domain.vehicle.VehicleId;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +21,14 @@ public class VehicleController {
         this.service = service;
     }
 
+    @Operation(summary = "Get vehicle by id")
     @GetMapping("/{id}")
     public ResponseEntity<VehicleResponse> get(@PathVariable long id) {
         var v = service.getById(new VehicleId(id));
         return ResponseEntity.ok(new VehicleResponse(v.id().value(), v.make(), v.model(), v.year()));
     }
 
+    @Operation(summary = "Search vehicles by optional filters")
     @GetMapping
     public List<VehicleResponse> search(
             @RequestParam(required = false) String make,
@@ -37,6 +40,7 @@ public class VehicleController {
                 .toList();
     }
 
+    @Operation(summary = "Create a new vehicle")
     @PostMapping
     public ResponseEntity<VehicleResponse> create(@Valid @RequestBody VehicleRequest req) {
         var created = service.create(req.make(), req.model(), req.year());
