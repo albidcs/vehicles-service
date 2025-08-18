@@ -18,7 +18,7 @@ public class VehicleEntity {
     @Column(nullable = false, length = 100)
     private String make;
 
-    @Column(nullable = false, length = 100)
+    @Column(name="model_year",nullable = false, length = 100)
     private String model;
 
     @Column(nullable = false)
@@ -36,5 +36,5 @@ public class VehicleEntity {
     public Long getId() { return id; }
     public String getMake() { return make; }
     public String getModel() { return model; }
-    public int getYear() { return year; }
+    public int getModelYear() { return year; }
 }

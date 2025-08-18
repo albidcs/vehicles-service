@@ -20,6 +20,6 @@ public final class VehicleMapper {
         if (id == null) {
             throw new IllegalStateException("VehicleEntity id must be non-null to map to domain");
         }
-        return new Vehicle(new VehicleId(id), entity.getMake(), entity.getModel(), entity.getYear());
+        return new Vehicle(new VehicleId(id), entity.getMake(), entity.getModel(), entity.getModelYear());
     }
 }
