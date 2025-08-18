@@ -62,7 +62,6 @@ final class VehicleServiceTest {
             return new Vehicle(id, make, model, year);
         }
 
-
         @Override
         public void delete(VehicleId id) {
             lastDeletedId.set(id);
@@ -75,7 +74,6 @@ final class VehicleServiceTest {
     void getById_returnsVehicle_whenPresent() {
         var repo = new FakeRepo();
         var service = new VehicleService(repo);
-
         var v = service.getById(new VehicleId(1L));
 
         assertEquals("Toyota", v.make());
@@ -92,7 +90,6 @@ final class VehicleServiceTest {
     void search_forwardsFilters_andReturnsResults() {
         var repo = new FakeRepo();
         var service = new VehicleService(repo);
-
         var results = service.search("Toyota", null, 2020);
 
         assertFalse(results.isEmpty());
@@ -100,4 +97,37 @@ final class VehicleServiceTest {
         assertNull(repo.lastModel.get());
         assertEquals(2020, repo.lastYear.get());
     }
+
+    @Test
+    void update_forwardsArgs_andReturnsUpdatedVehicle() {
+        var repo = new FakeRepo();
+        var service = new VehicleService(repo);
+
+        var id = new VehicleId(1L);
+        var updated = service.update(id, "Honda", "Civic", 2024);
+
+        assertEquals(id, repo.lastUpdatedId.get());
+        assertEquals("Honda", repo.lastUpdatedMake.get());
+        assertEquals("Civic", repo.lastUpdatedModel.get());
+        assertEquals(2024, repo.lastUpdatedYear.get());
+
+        assertEquals(1L, updated.id().value());
+        assertEquals("Honda", updated.make());
+        assertEquals("Civic", updated.model());
+        assertEquals(2024, updated.year());
+    }
+
+    @Test
+    void delete_marksEntityDeleted_andSubsequentGetThrows() {
+        var repo = new FakeRepo();
+        var service = new VehicleService(repo);
+
+        var id = new VehicleId(1L);
+        service.delete(id);
+
+        assertEquals(id, repo.lastDeletedId.get());
+        assertThrows(VehicleNotFoundException.class, () -> service.getById(id));
+    }
+
+
 }
