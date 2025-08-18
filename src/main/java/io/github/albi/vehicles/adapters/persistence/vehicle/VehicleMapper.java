@@ -1,25 +1,37 @@
 package io.github.albi.vehicles.adapters.persistence.vehicle;
 
-import io.github.albi.vehicles.domain.vehicle.Vehicle;
-import io.github.albi.vehicles.domain.vehicle.VehicleId;
+import io.github.albi.vehicles.domain.vehicle.*;
 
 
 import io.github.albi.vehicles.domain.vehicle.Vehicle;
 import io.github.albi.vehicles.domain.vehicle.VehicleId;
 
-public final class VehicleMapper {
-    private VehicleMapper() {}
-
-    public static VehicleEntity toEntity(Vehicle domain) {
-        Long id = domain.id() == null ? null : domain.id().value();
-        return new VehicleEntity(id, domain.make(), domain.model(), domain.year());
+final class VehicleMapper {
+    static Vehicle toDomain(VehicleEntity e) {
+        return new Vehicle(
+                new VehicleId(e.getId()),
+                e.getVin() == null ? new Vin("AAAAAAAAAAAAAAAAA") : new Vin(e.getVin()), // temp safety if legacy row exists
+                e.getType() == null ? VehicleType.OTHER : VehicleType.valueOf(e.getType()),
+                e.getMake(),
+                e.getModel(),
+                e.getModelYear(),
+                e.getFuelType() == null ? FuelType.OTHER : FuelType.valueOf(e.getFuelType()),
+                e.getColor(),
+                e.getRegistrationNumber()
+        );
     }
 
-    public static Vehicle toDomain(VehicleEntity entity) {
-        Long id = entity.getId();
-        if (id == null) {
-            throw new IllegalStateException("VehicleEntity id must be non-null to map to domain");
-        }
-        return new Vehicle(new VehicleId(id), entity.getMake(), entity.getModel(), entity.getModelYear());
+    static VehicleEntity toEntity(Vehicle v) {
+        return new VehicleEntity(
+                v.id().value(),
+                v.vin().value(),
+                v.type().name(),
+                v.make(),
+                v.model(),
+                v.year(),
+                v.fuelType().name(),
+                v.color(),
+                v.registrationNumber()
+        );
     }
 }
