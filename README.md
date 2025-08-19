@@ -1,10 +1,177 @@
-# Vehicles Service
+# 🚗 Vehicles Service
 
-A clean architecture Spring Boot service for managing vehicles. Demonstrates domain-driven design and separation of concerns.
+A **REST** API built with **Spring Boot** for managing vehicles.  
+It demonstrates **Clean Architecture principles** (Hexagonal / Ports & Adapters) and **Domain-Driven Design (DDD)**, ensuring a **domain-centric, framework-agnostic core** with clear separation of concerns.
 
----
+✨ Designed for:
+- 🔹 Maintainability — business logic isolated from frameworks
+- 🔹 Testability — pure domain can be tested without Spring/DB
+- 🔹 Extensibility — adapters can evolve independently (swap JPA, add caching, new APIs)
 
-## Architecture
+## 🚀 API Endpoints (Ports)
+
+Interactive documentation available at **[Swagger UI](http://localhost:8080/ui)** when app is running .
+
+| Method   | Endpoint                                | Description                                                                 |
+|----------|-----------------------------------------|-----------------------------------------------------------------------------|
+| **POST** | [`/vehicles`](http://localhost:8080/ui#/default/createUsingPOST)      | Create a new vehicle                                                        |
+| **GET**  | [`/vehicles/{id}`](http://localhost:8080/ui#/default/getByIdUsingGET) | Fetch a vehicle by its unique ID                                            |
+| **GET**  | [`/vehicles`](http://localhost:8080/ui#/default/searchUsingGET)       | Search vehicles by filters (`make`, `model`, `modelYear`, `type`, `fuelType`, `vin`, `registrationNumber`) |
+| **PUT**  | [`/vehicles/{id}`](http://localhost:8080/ui#/default/updateUsingPUT)  | Update an existing vehicle by ID                                            |
+| **DELETE** | [`/vehicles/{id}`](http://localhost:8080/ui#/default/deleteUsingDELETE) | Delete a vehicle by ID                                                      |                                                   |
+
+
+###  Examples
+### 📌 Create a Vehicle
+**Request**
+
+```bash
+curl -X POST http://localhost:8080/vehicles \
+  -H "Content-Type: application/json" \
+  -d '{
+        "vin": "1HGCM82633A123456",
+        "type": "CAR",
+        "make": "Toyota",
+        "model": "Corolla",
+        "modelYear": 2020,
+        "fuelType": "PETROL",
+        "color": "Blue",
+        "registrationNumber": "ABC123"
+      }'
+```
+Response — 201 Created ✅
+```bash
+{
+  "id": 1,
+  "vin": "1HGCM82633A123456",
+  "type": "CAR",
+  "make": "Toyota",
+  "model": "Corolla",
+  "modelYear": 2020,
+  "fuelType": "PETROL",
+  "color": "Blue",
+  "registrationNumber": "ABC123"
+}
+```
+
+
+### 📌 Get Vehicle by ID
+```bash
+curl -X GET http://localhost:8080/vehicles/1 -H "Accept: application/json"
+```
+Response — 200 OK ✅
+```bash
+ {
+  "id": 1,
+  "vin": "1HGCM82633A123456",
+  "type": "CAR",
+  "make": "Toyota",
+  "model": "Corolla",
+  "modelYear": 2020,
+  "fuelType": "PETROL",
+  "color": "Blue",
+  "registrationNumber": "ABC123"
+}
+```
+
+### 📌 Search Vehicles
+```bash
+curl -X GET "http://localhost:8080/vehicles?make=Toyota&model=Corolla&modelYear=2020" -H "Accept: application/json"
+```
+Response — 200 OK ✅
+```bash
+ [
+  {
+    "id": 6,
+    "vin": "1HGCM82633A123456",
+    "type": "CAR",
+    "make": "Toyota",
+    "model": "Corolla",
+    "modelYear": 2020,
+    "fuelType": "PETROL",
+    "color": "Blue",
+    "registrationNumber": "ABC123"
+  }
+]
+```
+
+
+### 📌 Update Vehicle
+```bash
+curl -X PUT http://localhost:8080/vehicles/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+        "vin": "1HGCM82633A123456",
+        "type": "CAR",
+        "make": "Toyota",
+        "model": "Corolla",
+        "modelYear": 2021,
+        "fuelType": "PETROL",
+        "color": "Red",
+        "registrationNumber": "ABC123"
+      }'
+
+```
+Response — 200 OK ✅
+```bash
+ {
+  "id": 1,
+  "vin": "1HGCM82633A123456",
+  "type": "CAR",
+  "make": "Toyota",
+  "model": "Corolla",
+  "modelYear": 2021,
+  "fuelType": "PETROL",
+  "color": "Red",
+  "registrationNumber": "ABC123"
+}
+```
+
+### 📌 Delete Vehicle
+```bash
+curl -X DELETE http://localhost:8080/vehicles/1
+```
+Response — 204 No Content ✅
+```bash
+➡️ (empty body)
+```
+
+
+
+### ⚠️ Error Model
+
+All errors follow a consistent JSON structure:
+
+```bash
+{
+  "code": "VALIDATION_ERROR | INVALID_ARGUMENT | NOT_FOUND | CONFLICT | INTERNAL",
+  "message": "Human-readable summary of the error",
+  "fieldErrors": [
+    {
+      "field": "vin",
+      "message": "must not be blank"
+    }
+  ]
+}
+```
+
+
+
+
+
+
+## 🏗️ Architecture
+
+This project follows **Hexagonal Architecture (Ports & Adapters)**, also aligned with **Google Clean Architecture** principles:
+
+- **Domain (Core):** Pure Java (entities, value objects, repository interfaces, domain exceptions). No framework dependencies.  
+- **Application (Use Cases):** Services that orchestrate business logic via domain ports.  
+- **Adapters:**  
+  - **Web (inbound):** REST controllers, DTOs, validation, exception handling.  
+  - **Persistence (outbound):** JPA entities, repositories, mappers, adapters.  
+- **Infrastructure:** Bootstrapping, Spring configuration, database, OpenAPI.  
+
+➡️ **Benefit:** Framework-agnostic core with testable business logic. Adapters can evolve independently (e.g., swap JPA, add caching, change web layer).
 
 ```
 vehicles-service
@@ -79,24 +246,22 @@ vehicles-service
 ├── .idea                                               # IntelliJ project files
 ```
 
-⚙️ Technologies Used
-•	☕ Java 21
-•	🌱 Spring Boot 3.5.4
-•	🌍 Spring Web (REST APIs)
-•	🗄️ Spring Data JPA
-•	📦 Hibernate ORM
-•	🐘 PostgreSQL
-•	🛫 Flyway (DB migrations)
-•	📘 OpenAPI / Swagger UI
-•	🧪 JUnit 5
-•	🎭 Mockito
-•	✅ AssertJ
-•	🔨 Maven
-•	🐳 Docker
+## ⚙️ Tech Stack
 
-## Getting Started
+- ☕ **Java 21**  
+- 🌱 **Spring Boot 3.5.4**  
+- 🌍 **Spring Web (REST APIs)**  
+- 🗄️ **Spring Data JPA** + 📦 **Hibernate ORM**  
+- 🐘 **PostgreSQL** (with 🛫 **Flyway migrations**)  
+- 📘 **OpenAPI / Swagger UI** (`/ui`)  
+- ✅ **Spring Validation** (Jakarta Bean Validation with annotations like `@NotBlank`, `@Size`, `@Min`, `@Max`)  
+- 🧪 **JUnit 5** + 🎭 **Mockito** + ✅ **AssertJ** (unit & integration testing)  
+- 🔨 **Maven** (build & dependency management)  
+- 🐳 **Docker** (DB provisioning & local dev)
 
-### Prerequisites
+# Getting Started
+
+## Prerequisites
 - Java 21+
 - Maven 3.9+ (or use `./mvnw` wrapper)
 - Docker (for PostgreSQL)
@@ -118,40 +283,44 @@ vehicles-service
    ./mvnw spring-boot:run
    ```
 
-The application expects the following default connection (from `application.yml`):
-```
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/vehicles
-    username: vehicles
-    password: vehicles
-```
+
 
 ---
 
-## Database Migrations
+### Database Migrations
 
 - Managed via [Flyway](https://flywaydb.org/).
 - Migration files are under `src/main/resources/db/migration`.
 
-Example migration:
 
-```sql
--- V1__create_vehicles.sql
-create table if not exists vehicles (
-   id    bigserial primary key,
-   make  varchar(100) not null,
-   model varchar(100) not null,
-   year  int not null
-   );
-create index if not exists idx_vehicles_make  on vehicles(make);
-create index if not exists idx_vehicles_model on vehicles(model);
-create index if not exists idx_vehicles_year  on vehicles(year);
-```
+## 🗄️ Database Schema
 
----
+**vehicles** table:
 
-## Testing
+| Column              | Type         | Constraints                       | Description                         |
+|---------------------|--------------|-----------------------------------|-------------------------------------|
+| id                  | BIGINT       | PK (auto-increment)               | Auto-generated primary key           |
+| make                | VARCHAR(100) | NOT NULL                          | Manufacturer (e.g., Toyota)         |
+| model               | VARCHAR(100) | NOT NULL                          | Model name                          |
+| model_year          | INT          | NOT NULL                          | Model production year (>= 1886)     |
+| vin                 | VARCHAR(17)  | NOT NULL, UNIQUE                  | Vehicle Identification Number (VIN) |
+| type                | VARCHAR(20)  | NOT NULL                          | Vehicle type (e.g., CAR, TRUCK)     |
+| fuel_type           | VARCHAR(20)  | NOT NULL                          | Fuel type (PETROL, DIESEL, ELECTRIC)|
+| color               | VARCHAR(40)  | NULLABLE                          | Optional vehicle color              |
+| registration_number | VARCHAR(20)  | UNIQUE, NULLABLE                  | License plate number                |
+
+**Indexes**:  
+- PK → `vehicles_pkey` (on `id`)  
+- Unique → `uk_vehicles_vin` (on `vin`)  
+- Unique → `uk_vehicles_registration` (on `registration_number`)  
+- Additional indexes → on `make`, `model`, `model_year`
+
+**Indexes**:  
+- `idx_vehicles_make` on `make`  
+- `idx_vehicles_model` on `model`  
+- `idx_vehicles_year` on `model_year`  
+
+### Testing
 
 Run all unit tests:
 
@@ -161,6 +330,6 @@ Run all unit tests:
 
 ---
 
-## License
+#### License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
