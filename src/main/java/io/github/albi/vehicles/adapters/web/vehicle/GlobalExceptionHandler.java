@@ -40,7 +40,7 @@ class GlobalExceptionHandler {
     ResponseEntity<ErrorResponse> handleConstraintViolations(ConstraintViolationException ex) {
         var fieldErrors = ex.getConstraintViolations().stream()
                 .map(v -> new FieldError(
-                        // propertyPath like "create.req.year" → take last node
+                        // propertyPath like "create.req.modelYear" → take last node
                         Optional.ofNullable(v.getPropertyPath()).map(p -> {
                             var it = p.iterator(); String last = "";
                             while (it.hasNext()) last = it.next().getName();

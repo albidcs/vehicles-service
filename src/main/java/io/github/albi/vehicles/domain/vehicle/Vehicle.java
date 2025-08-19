@@ -29,7 +29,7 @@ public final class Vehicle {
         if (type == null) throw new IllegalArgumentException("type is required");
         if (make == null || make.isBlank()) throw new IllegalArgumentException("make is required");
         if (model == null || model.isBlank()) throw new IllegalArgumentException("model is required");
-        if (year < 1886) throw new IllegalArgumentException("year invalid");
+        if (year < 1886) throw new IllegalArgumentException("modelYear invalid");
         if (fuelType == null) throw new IllegalArgumentException("fuelType is required");
 
         this.id = id;

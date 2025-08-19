@@ -9,7 +9,7 @@ public record VehicleRequest(
         @NotNull VehicleType type,
         @NotBlank String make,
         @NotBlank String model,
-        @NotNull @Min(1886) Integer year,
+        @NotNull @Min(1886) Integer modelYear,
         @NotNull FuelType fuelType,
         @Size(max = 40) String color,
         @Size(max = 20) String registrationNumber

@@ -44,7 +44,7 @@ public class VehicleController {
     @PostMapping
     public ResponseEntity<VehicleResponse> create(@Valid @RequestBody VehicleRequest req) {
         var created = service.create(
-                new Vin(req.vin()), req.type(), req.make(), req.model(), req.year(),
+                new Vin(req.vin()), req.type(), req.make(), req.model(), req.modelYear(),
                 req.fuelType(), req.color(), req.registrationNumber()
         );
         var location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -57,7 +57,7 @@ public class VehicleController {
     public ResponseEntity<VehicleResponse> update(@PathVariable long id, @Valid @RequestBody VehicleRequest req) {
         var updated = service.update(
                 new VehicleId(id),
-                new Vin(req.vin()), req.type(), req.make(), req.model(), req.year(),
+                new Vin(req.vin()), req.type(), req.make(), req.model(), req.modelYear(),
                 req.fuelType(), req.color(), req.registrationNumber()
         );
         return ResponseEntity.ok(toResponse(updated));

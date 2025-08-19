@@ -103,7 +103,7 @@ class VehicleControllerTest {
             mvc.perform(get(BASE)
                             .param("make", "Toyota")
                             .param("model", "Yaris")
-                            .param("year", "2022")
+                            .param("modelYear", "2022")
                             .param("type", "CAR")
                             .param("fuelType", "PETROL")
                             .accept(MediaType.APPLICATION_JSON))

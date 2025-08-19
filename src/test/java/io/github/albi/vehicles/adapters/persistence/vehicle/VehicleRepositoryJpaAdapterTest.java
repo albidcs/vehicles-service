@@ -58,7 +58,7 @@ class VehicleRepositoryJpaAdapterTest {
     }
 
     @Test
-    @DisplayName("persisted model/year are read back correctly (model_year column)")
+    @DisplayName("persisted model/modelYear are read back correctly (model_year column)")
     void persistAndReadBack_correctMapping() {
         var saved = jpa.save(new VehicleEntity(
                 null, "5YJSA1E26HF000001", "CAR",
@@ -149,7 +149,7 @@ class VehicleRepositoryJpaAdapterTest {
         jpa.save(new VehicleEntity(null, "99999999999999999", "CAR", "Tesla", "Model 3", 2023, "ELECTRIC", "White", "TSL303"));
         jpa.save(new VehicleEntity(null, "10101010101010101", "CAR", "BMW",   "i3",      2019, "ELECTRIC", "Gray",  "BMWi300"));
 
-        // blank model should be ignored; only year constrains
+        // blank model should be ignored; only modelYear constrains
         var r1 = adapter.search(" ", null, 2023, null, null);
         assertThat(r1).extracting(Vehicle::make).containsExactly("Tesla");
 
