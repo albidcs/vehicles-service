@@ -174,16 +174,26 @@ All errors follow a consistent JSON structure:
 
 ## 🏗️ Architecture
 
-This project follows **Hexagonal Architecture (Ports & Adapters)**, also aligned with **Google Clean Architecture** principles:
+This project follows **Hexagonal Architecture (Ports & Adapters)**, aligned with **Clean Architecture** principles:
 
-- **Domain (Core):** Pure Java (entities, value objects, repository interfaces, domain exceptions). No framework dependencies.  
-- **Application (Use Cases):** Services that orchestrate business logic via domain ports.  
+- **Domain (Core):**  
+  Pure Java business layer — entities, value objects, repository interfaces, domain exceptions.  
+  ✅ No framework dependencies.  
+
+- **Application (Use Cases):**  
+  Services orchestrating business logic via domain ports (e.g., `VehicleService`).  
+
 - **Adapters:**  
-  - **Web (inbound):** REST controllers, DTOs, validation, exception handling.  
-  - **Persistence (outbound):** JPA entities, repositories, mappers, adapters.  
-- **Infrastructure:** Bootstrapping, Spring configuration, database, OpenAPI.  
+  - **Inbound (Web):** REST controllers, DTOs, request validation, exception handling.  
+  - **Outbound (Persistence):** JPA entities, repositories, mappers, and adapter implementing the domain port.  
 
-➡️ **Benefit:** Framework-agnostic core with testable business logic. Adapters can evolve independently (e.g., swap JPA, add caching, change web layer).
+- **Bootstrap:**  
+  Application startup and configuration — Spring Boot entrypoint, service wiring, OpenAPI/Swagger setup.  
+
+- **Infrastructure (Future):**  
+  Reserved for cross-cutting concerns (e.g., security, messaging, external integrations).  
+
+➡️ **Benefit:** The domain remains framework-agnostic and testable. Adapters and infrastructure can evolve independently (e.g., replace JPA, add caching, switch web layer).
 
 ```
 vehicles-service
