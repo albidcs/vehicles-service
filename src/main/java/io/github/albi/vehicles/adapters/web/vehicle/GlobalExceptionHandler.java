@@ -75,12 +75,38 @@ class GlobalExceptionHandler {
                         List.of(new FieldError(field, msg))));
     }
 
-    // --- 409: database uniqueness / FK issues etc. (if applicable) ---
+    // --- 409: database uniqueness / FK issues etc. with field mapping ---
     @ExceptionHandler(DataIntegrityViolationException.class)
     ResponseEntity<ErrorResponse> handleConflict(DataIntegrityViolationException ex) {
+        List<FieldError> fieldErrors = new ArrayList<>();
+        String friendly = "Request violates data constraints";
+
+        Throwable root = unwrap(ex);
+
+        // Case 1: Hibernate's ConstraintViolationException with constraint name
+        if (root instanceof org.hibernate.exception.ConstraintViolationException hce) {
+            String c = safe(hce.getConstraintName());
+            FieldError mapped = mapConstraintToField(c);
+            if (mapped != null) fieldErrors.add(mapped);
+            friendly = messageForConstraint(c);
+        }
+        // Case 2: Plain JDBC SQLException (fallback heuristics)
+        else if (root instanceof java.sql.SQLException sqlEx) {
+            String sqlState = safe(sqlEx.getSQLState());
+            String msg = safe(sqlEx.getMessage());
+            // 23505: unique violation in Postgres/H2
+            if ("23505".equals(sqlState) || msg.toLowerCase().contains("unique")) {
+                FieldError mapped = inferFieldFromMessage(msg);
+                if (mapped != null) fieldErrors.add(mapped);
+                friendly = "Duplicate value for a unique field";
+            }
+        }
+
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.of("CONFLICT", "Request violates data constraints"));
+                .body(ErrorResponse.of("CONFLICT", friendly, fieldErrors));
     }
+
+
 
     // --- 500: fallback ---
     @ExceptionHandler(Exception.class)
@@ -99,4 +125,49 @@ class GlobalExceptionHandler {
         }
     }
     record FieldError(String field, String message) {}
+    private static Throwable unwrap(Throwable t) {
+        Throwable cur = t;
+        while (cur.getCause() != null && cur.getCause() != cur) cur = cur.getCause();
+        return cur;
+    }
+
+    private static String safe(String s) { return s == null ? "" : s; }
+
+    /** Map known constraint names -> field */
+    private static FieldError mapConstraintToField(String constraintName) {
+        if (constraintName == null) return null;
+        String c = constraintName.toLowerCase();
+
+        // Match your @Table(uniqueConstraints=...) names in VehicleEntity
+        if (c.contains("uk_vehicles_vin")) {
+            return new FieldError("vin", "must be unique");
+        }
+        if (c.contains("uk_vehicles_registration")) {
+            return new FieldError("registrationNumber", "must be unique");
+        }
+        // Unknown constraint: optional generic message
+        return new FieldError("unknown", "violates constraint: " + constraintName);
+    }
+
+    /** Friendly top-level message */
+    private static String messageForConstraint(String constraintName) {
+        String c = safe(constraintName).toLowerCase();
+        if (c.contains("uk_vehicles_vin")) return "VIN already exists";
+        if (c.contains("uk_vehicles_registration")) return "Registration number already exists";
+        return "Request violates data constraints";
+    }
+
+    /** Fallback: infer field from DB error message text if we lack a name */
+    private static FieldError inferFieldFromMessage(String dbMessage) {
+        String m = safe(dbMessage).toLowerCase();
+        if (m.contains("vin") || m.contains("uk_vehicles_vin")) {
+            return new FieldError("vin", "must be unique");
+        }
+        if (m.contains("registration") || m.contains("uk_vehicles_registration")) {
+            return new FieldError("registrationNumber", "must be unique");
+        }
+        return null;
+    }
+
+
 }
