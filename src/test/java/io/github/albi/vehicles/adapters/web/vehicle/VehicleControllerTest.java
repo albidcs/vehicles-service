@@ -20,6 +20,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+// ...imports unchanged...
+
 @ExtendWith(MockitoExtension.class)
 @DisplayName("VehicleController")
 class VehicleControllerTest {
@@ -97,13 +99,19 @@ class VehicleControllerTest {
         @DisplayName("returns 200 and filtered list")
         void ok() throws Exception {
             var v1 = sampleVehicle(1L, 2022);
-            when(vehicleService.search(eq("Toyota"), eq("Yaris"), eq(2022), eq(VehicleType.CAR), eq(FuelType.PETROL)))
-                    .thenReturn(java.util.List.of(v1));
+
+            // ✅ stub the 7-arg signature, with vin & registrationNumber = null
+            when(vehicleService.search(
+                    eq("Toyota"), eq("Yaris"), eq(2022),
+                    eq(VehicleType.CAR), eq(FuelType.PETROL),
+                    isNull(), isNull())
+            ).thenReturn(java.util.List.of(v1));
 
             mvc.perform(get(BASE)
                             .param("make", "Toyota")
                             .param("model", "Yaris")
-                            .param("modelYear", "2022")
+                            // ✅ controller expects 'year' (not 'modelYear') as query param
+                            .param("year", "2022")
                             .param("type", "CAR")
                             .param("fuelType", "PETROL")
                             .accept(MediaType.APPLICATION_JSON))
@@ -143,7 +151,7 @@ class VehicleControllerTest {
                           "type": "CAR",
                           "make": "Toyota",
                           "model": "Yaris",
-                          "year": 2022,
+                          "modelYear": 2022,
                           "fuelType": "PETROL",
                           "color": "Blue",
                           "registrationNumber": "ABC123"
@@ -183,7 +191,7 @@ class VehicleControllerTest {
                           "type": "CAR",
                           "make": "Toyota",
                           "model": "Yaris",
-                          "year": 2023,
+                          "modelYear": 2023,
                           "fuelType": "PETROL",
                           "color": "Blue",
                           "registrationNumber": "ABC123"
