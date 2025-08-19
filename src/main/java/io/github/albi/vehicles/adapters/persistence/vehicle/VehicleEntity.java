@@ -18,7 +18,7 @@ public class VehicleEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "vin", length = 17, nullable = true) // keep nullable for smoother migration
+    @Column(name = "vin", length = 17, nullable = false)
     private String vin;
 
     @Column(name = "type", length = 20, nullable = true)
@@ -39,7 +39,7 @@ public class VehicleEntity {
     @Column(name = "color", length = 40)
     private String color;
 
-    @Column(name = "registration_number", length = 20)
+    @Column(name = "registration_number", length = 20 , unique = true)
     private String registrationNumber;
 
     protected VehicleEntity() {}

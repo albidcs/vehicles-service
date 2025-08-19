@@ -42,6 +42,19 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
     public List<Vehicle> search(String make, String model, Integer year,
                                 VehicleType type, FuelType fuelType,
                                 String vin, String registrationNumber) {
+        if (vin != null && !vin.isBlank()) {
+            return jpa.findByVin(vin)
+                    .map(VehicleMapper::toDomain)
+                    .map(List::of)
+                    .orElse(List.of()); // return empty list instead of blowing up
+        }
+        if (registrationNumber != null && !registrationNumber.isBlank()) {
+            return jpa.findByRegistrationNumberIgnoreCase(registrationNumber)
+                    .map(VehicleMapper::toDomain)
+                    .map(List::of)
+                    .orElse(List.of());
+        }
+
         Specification<VehicleEntity> spec = andAll(
                 likeIgnoreCaseIfPresent("make", make),
                 likeIgnoreCaseIfPresent("model", model),
