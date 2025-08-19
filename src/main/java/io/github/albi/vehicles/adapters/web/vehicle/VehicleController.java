@@ -38,11 +38,15 @@ public class VehicleController {
             @RequestParam(required = false) String vin,
             @RequestParam(required = false, name = "registrationNumber") String regNo
     ) {
+        // Disallow ambiguous “both unique keys” in a single call (optional)
+        if (vin != null && !vin.isBlank() && regNo != null && !regNo.isBlank()) {
+            throw new IllegalArgumentException("Provide either 'vin' or 'registrationNumber', not both.");
+        }
         return service.search(make, model, year, type, fuelType, vin, regNo)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+                .stream().map(this::toResponse).toList();
     }
+
+
     @Operation(summary = "Create vehicle")
     @PostMapping
     public ResponseEntity<VehicleResponse> create(@Valid @RequestBody VehicleRequest req) {

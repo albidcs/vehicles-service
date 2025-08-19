@@ -22,35 +22,34 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
         this.jpa = jpa;
     }
 
+
     @Override
     public Optional<Vehicle> findById(VehicleId id) {
         return jpa.findById(id.value()).map(VehicleMapper::toDomain);
     }
 
     @Override
-    public List<Vehicle> search(String make,
-                                String model,
-                                Integer year,
-                                VehicleType type,
-                                FuelType fuelType,
-                                String vin,
-                                String registrationNumber) {
+    public Optional<Vehicle> findByVin(Vin vin) {
+        return jpa.findByVin(vin.value()).map(VehicleMapper::toDomain);
+    }
 
+    @Override
+    public Optional<Vehicle> findByRegistrationNumber(String registrationNumber) {
+        return jpa.findByRegistrationNumberIgnoreCase(registrationNumber).map(VehicleMapper::toDomain);
+    }
+
+    @Override
+    public List<Vehicle> search(String make, String model, Integer year,
+                                VehicleType type, FuelType fuelType,
+                                String vin, String registrationNumber) {
         Specification<VehicleEntity> spec = andAll(
                 likeIgnoreCaseIfPresent("make", make),
                 likeIgnoreCaseIfPresent("model", model),
                 equalsIfPresent("modelYear", year),
                 equalsIfPresent("type", type == null ? null : type.name()),
-                equalsIfPresent("fuelType", fuelType == null ? null : fuelType.name()),
-                // vin: exact match (DB stores uppercase 17 chars)
-                equalsIfPresent("vin", vin == null ? null : vin.trim().toUpperCase()),
-                // registrationNumber: case-insensitive exact match
-                equalsIgnoreCaseIfPresent("registrationNumber", registrationNumber)
+                equalsIfPresent("fuelType", fuelType == null ? null : fuelType.name())
         );
-
-        return jpa.findAll(spec).stream()
-                .map(VehicleMapper::toDomain)
-                .toList();
+        return jpa.findAll(spec).stream().map(VehicleMapper::toDomain).toList();
     }
 
     @Transactional

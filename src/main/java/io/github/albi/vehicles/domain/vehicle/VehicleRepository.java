@@ -1,17 +1,19 @@
 // VehicleRepository.java
 package io.github.albi.vehicles.domain.vehicle;
 
+
 import java.util.List;
 import java.util.Optional;
 
 public interface VehicleRepository {
     Optional<Vehicle> findById(VehicleId id);
+    Optional<Vehicle> findByVin(Vin vin);
+    Optional<Vehicle> findByRegistrationNumber(String registrationNumber);
 
-    // All filters are optional; null = ignored
+    // Filters are optional; vin/regNo act as unique lookups if present.
     List<Vehicle> search(String make, String model, Integer year,
                          VehicleType type, FuelType fuelType,
                          String vin, String registrationNumber);
-
     Vehicle create(Vin vin, VehicleType type, String make, String model, Integer year,
                    FuelType fuelType, String color, String registrationNumber);
 

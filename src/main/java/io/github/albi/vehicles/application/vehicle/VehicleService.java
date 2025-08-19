@@ -19,7 +19,14 @@ public final class VehicleService {
     public List<Vehicle> search(String make, String model, Integer year,
                                 VehicleType type, FuelType fuelType,
                                 String vin, String registrationNumber) {
-        return repository.search(make, model, year, type, fuelType, vin, registrationNumber);
+        // If unique keys are present, short-circuit to a single-object list
+        if (vin != null && !vin.isBlank()) {
+            return repository.findByVin(new Vin(vin)).map(List::of).orElse(List.of());
+        }
+        if (registrationNumber != null && !registrationNumber.isBlank()) {
+            return repository.findByRegistrationNumber(registrationNumber).map(List::of).orElse(List.of());
+        }
+        return repository.search(make, model, year, type, fuelType, null, null);
     }
 
     public Vehicle create(Vin vin, VehicleType type, String make, String model, Integer year,
