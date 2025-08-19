@@ -1,5 +1,17 @@
 # 🚗 Vehicles Service
 
+[![Build](https://github.com/albidcs/vehicles-service/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/albidcs/vehicles-service/actions/workflows/ci.yml)
+[![Java](https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white)](#)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-6DB33F?logo=spring-boot&logoColor=white)](#)
+[![OpenAPI](https://img.shields.io/badge/Swagger%20UI-/ui-85EA2D?logo=swagger&logoColor=white)](#)
+[![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL-4169E1?logo=postgresql&logoColor=white)](#)
+[![Flyway](https://img.shields.io/badge/DB-Flyway-red?logo=flyway&logoColor=white)](#)
+[![Maven](https://img.shields.io/badge/Build-Maven-C71A36?logo=apachemaven&logoColor=white)](#)
+[![JUnit5](https://img.shields.io/badge/Test-JUnit5-25A162?logo=junit5&logoColor=white)](#)
+[![Mockito](https://img.shields.io/badge/Test-Mockito-pink?logo=mockito&logoColor=white)](#)
+[![Docker](https://img.shields.io/badge/Container-Docker-2496ED?logo=docker&logoColor=white)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
+
 A **REST** API built with **Spring Boot** for managing vehicles.  
 It demonstrates **Clean Architecture principles** (Hexagonal / Ports & Adapters) and **Domain-Driven Design (DDD)**, ensuring a **domain-centric, framework-agnostic core** with clear separation of concerns.
 
