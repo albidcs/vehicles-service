@@ -37,7 +37,54 @@ final class VehicleServiceTest {
         }
 
         @Override
-        public List<Vehicle> search(String make, String model, Integer year, VehicleType type, FuelType fuelType) {
+        public Optional<Vehicle> findByVin(Vin vin) { return Optional.empty(); }
+
+        @Override
+        public Optional<Vehicle> findByRegistrationNumber(String registrationNumber) { return Optional.empty(); }
+
+        // ✅ Single source of truth: 7-arg search only
+        @Override
+        public List<Vehicle> search(String make, String model, Integer year,
+                                    VehicleType type, FuelType fuelType,
+                                    String vin, String registrationNumber) {
+
+            // If VIN provided, simulate exact match or empty
+            if (vin != null && !vin.isBlank()) {
+                if ("22222222222222222".equals(vin)) {
+                    return List.of(new Vehicle(
+                            new VehicleId(2L),
+                            new Vin(vin),
+                            type != null ? type : VehicleType.CAR,
+                            make != null ? make : "Honda",
+                            model != null ? model : "Civic",
+                            year != null ? year : 2021,
+                            fuelType != null ? fuelType : FuelType.DIESEL,
+                            "Black",
+                            "XYZ987"
+                    ));
+                }
+                return List.of();
+            }
+
+            // If registration provided, simulate exact (case-insensitive) or empty
+            if (registrationNumber != null && !registrationNumber.isBlank()) {
+                if ("xyz987".equalsIgnoreCase(registrationNumber)) {
+                    return List.of(new Vehicle(
+                            new VehicleId(2L),
+                            new Vin("22222222222222222"),
+                            type != null ? type : VehicleType.CAR,
+                            make != null ? make : "Honda",
+                            model != null ? model : "Civic",
+                            year != null ? year : 2021,
+                            fuelType != null ? fuelType : FuelType.DIESEL,
+                            "Black",
+                            "XYZ987"
+                    ));
+                }
+                return List.of();
+            }
+
+            // Fallback: behave like the old 5-arg path for filter-only searches
             return List.of(new Vehicle(
                     new VehicleId(2L),
                     new Vin("22222222222222222"),
@@ -119,7 +166,7 @@ final class VehicleServiceTest {
     @Test
     void search_returnsFilteredResults() {
         var service = new VehicleService(new FakeRepo());
-        var results = service.search("Honda", "Civic", 2021, VehicleType.CAR, FuelType.DIESEL);
+        var results = service.search("Honda", "Civic", 2021, VehicleType.CAR, FuelType.DIESEL, null, null);
 
         assertFalse(results.isEmpty());
         var v = results.getFirst();
@@ -197,6 +244,4 @@ final class VehicleServiceTest {
         assertEquals(id, repo.lastDeleted);
         assertThrows(VehicleNotFoundException.class, () -> service.getById(id));
     }
-
-
 }
