@@ -34,12 +34,15 @@ public class VehicleController {
             @RequestParam(required = false) String model,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) VehicleType type,
-            @RequestParam(required = false) FuelType fuelType
+            @RequestParam(required = false) FuelType fuelType,
+            @RequestParam(required = false) String vin,
+            @RequestParam(required = false, name = "registrationNumber") String regNo
     ) {
-        return service.search(make, model, year, type, fuelType)
-                .stream().map(this::toResponse).toList();
+        return service.search(make, model, year, type, fuelType, vin, regNo)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
-
     @Operation(summary = "Create vehicle")
     @PostMapping
     public ResponseEntity<VehicleResponse> create(@Valid @RequestBody VehicleRequest req) {

@@ -28,15 +28,29 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
     }
 
     @Override
-    public List<Vehicle> search(String make, String model, Integer year, VehicleType type, FuelType fuelType) {
+    public List<Vehicle> search(String make,
+                                String model,
+                                Integer year,
+                                VehicleType type,
+                                FuelType fuelType,
+                                String vin,
+                                String registrationNumber) {
+
         Specification<VehicleEntity> spec = andAll(
                 likeIgnoreCaseIfPresent("make", make),
                 likeIgnoreCaseIfPresent("model", model),
                 equalsIfPresent("modelYear", year),
                 equalsIfPresent("type", type == null ? null : type.name()),
-                equalsIfPresent("fuelType", fuelType == null ? null : fuelType.name())
+                equalsIfPresent("fuelType", fuelType == null ? null : fuelType.name()),
+                // vin: exact match (DB stores uppercase 17 chars)
+                equalsIfPresent("vin", vin == null ? null : vin.trim().toUpperCase()),
+                // registrationNumber: case-insensitive exact match
+                equalsIgnoreCaseIfPresent("registrationNumber", registrationNumber)
         );
-        return jpa.findAll(spec).stream().map(VehicleMapper::toDomain).toList();
+
+        return jpa.findAll(spec).stream()
+                .map(VehicleMapper::toDomain)
+                .toList();
     }
 
     @Transactional
@@ -93,5 +107,12 @@ public class VehicleRepositoryJpaAdapter implements VehicleRepository {
         Specification<VehicleEntity> result = parts.get(0);
         for (int i = 1; i < parts.size(); i++) result = result.and(parts.get(i));
         return result;
+    }
+
+    private static Specification<VehicleEntity> equalsIgnoreCaseIfPresent(String field, String value) {
+        return (root, cq, cb) -> {
+            if (value == null || value.isBlank()) return cb.conjunction();
+            return cb.equal(cb.lower(root.get(field)), value.toLowerCase());
+        };
     }
 }

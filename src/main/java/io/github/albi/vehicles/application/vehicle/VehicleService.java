@@ -1,15 +1,7 @@
+// VehicleService.java
 package io.github.albi.vehicles.application.vehicle;
 
-import io.github.albi.vehicles.domain.vehicle.Vehicle;
-import io.github.albi.vehicles.domain.vehicle.VehicleId;
-import io.github.albi.vehicles.domain.vehicle.VehicleNotFoundException;
-import io.github.albi.vehicles.domain.vehicle.VehicleRepository;
-import java.util.List;
-import java.util.Objects;
-
-
 import io.github.albi.vehicles.domain.vehicle.*;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -25,8 +17,9 @@ public final class VehicleService {
     }
 
     public List<Vehicle> search(String make, String model, Integer year,
-                                VehicleType type, FuelType fuelType) {
-        return repository.search(make, model, year, type, fuelType);
+                                VehicleType type, FuelType fuelType,
+                                String vin, String registrationNumber) {
+        return repository.search(make, model, year, type, fuelType, vin, registrationNumber);
     }
 
     public Vehicle create(Vin vin, VehicleType type, String make, String model, Integer year,
