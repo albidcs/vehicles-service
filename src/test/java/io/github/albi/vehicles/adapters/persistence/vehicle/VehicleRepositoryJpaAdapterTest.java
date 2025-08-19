@@ -26,23 +26,20 @@ class VehicleRepositoryJpaAdapterTest {
     @Test
     @DisplayName("findById returns mapped domain object")
     void findById_returnsVehicle() {
-        // Arrange – persist via JPA repository (use new ctor)
         var saved = jpa.save(new VehicleEntity(
                 null,
-                "1HGCM82633A004352",   // vin (17 chars)
-                "CAR",                 // type
+                "1HGCM82633A004352",
+                "CAR",
                 "Toyota",
                 "Yaris",
-                2022,                  // model_year
-                "PETROL",              // fuel_type
-                "Blue",                // color
-                "ABC123"               // registration_number
+                2022,
+                "PETROL",
+                "Blue",
+                "ABC123"
         ));
 
-        // Act – fetch through domain adapter
         Optional<Vehicle> result = adapter.findById(new VehicleId(saved.getId()));
 
-        // Assert (we only assert a subset that the old test asserted)
         assertThat(result).isPresent();
         var v = result.get();
         assertThat(v.id().value()).isEqualTo(saved.getId());
@@ -75,7 +72,7 @@ class VehicleRepositoryJpaAdapterTest {
         jpa.save(new VehicleEntity(null, "33333333333333333", "CAR", "Toyota", "Yaris", 2022, "PETROL", "Black", "TYR001"));
         jpa.save(new VehicleEntity(null, "44444444444444444", "CAR", "Honda",  "Civic", 2020, "DIESEL", "White", "HCV001"));
 
-        var result = adapter.search("Toyota", "Yaris", 2022, VehicleType.CAR, FuelType.PETROL);
+        var result = adapter.search("Toyota", "Yaris", 2022, VehicleType.CAR, FuelType.PETROL, null, null);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().model()).isEqualTo("Yaris");
@@ -108,7 +105,7 @@ class VehicleRepositoryJpaAdapterTest {
 
         var updated = adapter.update(
                 id,
-                new Vin("7FAYM1EE7KN000001"), // keep same VIN for uniqueness
+                new Vin("7FAYM1EE7KN000001"),
                 VehicleType.CAR,
                 "Honda", "Civic", 2024,
                 FuelType.PETROL,
@@ -139,7 +136,7 @@ class VehicleRepositoryJpaAdapterTest {
     @DisplayName("search is case-insensitive for make and model")
     void search_caseInsensitive() {
         jpa.save(new VehicleEntity(null, "88888888888888888", "CAR", "TOYOTA", "YARIS", 2022, "PETROL", "Black", "TYY888"));
-        var result = adapter.search("toyota", "yaris", 2022, VehicleType.CAR, FuelType.PETROL);
+        var result = adapter.search("toyota", "yaris", 2022, VehicleType.CAR, FuelType.PETROL, null, null);
         assertThat(result).hasSize(1);
     }
 
@@ -150,11 +147,11 @@ class VehicleRepositoryJpaAdapterTest {
         jpa.save(new VehicleEntity(null, "10101010101010101", "CAR", "BMW",   "i3",      2019, "ELECTRIC", "Gray",  "BMWi300"));
 
         // blank model should be ignored; only modelYear constrains
-        var r1 = adapter.search(" ", null, 2023, null, null);
+        var r1 = adapter.search(" ", null, 2023, null, null, null, null);
         assertThat(r1).extracting(Vehicle::make).containsExactly("Tesla");
 
         // all blank/null -> no constraints (returns all)
-        var r2 = adapter.search(" ", "  ", null, null, null);
+        var r2 = adapter.search(" ", "  ", null, null, null, null, null);
         assertThat(r2).hasSizeGreaterThanOrEqualTo(2);
     }
 
@@ -164,9 +161,9 @@ class VehicleRepositoryJpaAdapterTest {
         jpa.save(new VehicleEntity(null, "12121212121212121", "CAR", "VW", "Golf", 2018, "PETROL", "Blue",  "VWG018"));
         jpa.save(new VehicleEntity(null, "13131313131313131", "CAR", "VW", "Golf", 2020, "PETROL", "Black", "VWG020"));
 
-        assertThat(adapter.search("VW",   null, null, null, null)).hasSizeGreaterThanOrEqualTo(2);
-        assertThat(adapter.search(null, "Golf", null, null, null)).hasSizeGreaterThanOrEqualTo(2);
-        assertThat(adapter.search(null,  null, 2018, null, null)).extracting(Vehicle::year).containsExactly(2018);
+        assertThat(adapter.search("VW",   null, null, null, null, null, null)).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(adapter.search(null, "Golf", null, null, null, null, null)).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(adapter.search(null,  null, 2018, null, null, null, null)).extracting(Vehicle::year).containsExactly(2018);
     }
 
     @Configuration
